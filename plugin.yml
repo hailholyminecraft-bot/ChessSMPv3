@@ -1,0 +1,36 @@
+name: ChessSMP
+version: ${project.version}
+main: com.chesssmp.ChessSMP
+api-version: '26.2'
+description: Chess-inspired PvP classes, abilities and the Chess War team event.
+author: ChessSMP
+commands:
+  chess:
+    description: Main ChessSMP command (choose, ability, trader, event, top, stats, reload)
+    usage: /<command> [help]
+    aliases: [chesssmp]
+  chessinfo:
+    description: Show your chess piece, statistics and abilities
+    usage: /<command> [piece|menu]
+    aliases: [cinfo]
+permissions:
+  chesssmp.player:
+    description: Use classes, abilities, stats and join Chess War events
+    default: true
+  chesssmp.event:
+    description: Start, stop and configure Chess War events
+    default: op
+  chesssmp.trader:
+    description: Obtain the Piece Trader item
+    default: op
+  chesssmp.announce:
+    description: Show title announcements to all players (/chess announce)
+    default: op
+  chesssmp.admin:
+    description: Full administrative access to ChessSMP
+    default: op
+    children:
+      chesssmp.player: true
+      chesssmp.event: true
+      chesssmp.trader: true
+      chesssmp.announce: true

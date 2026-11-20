@@ -1,0 +1,869 @@
+# ============================================================================
+#  ChessSMP 2.2.0 - configuration
+#  Messages use MiniMessage (https://docs.advntr.dev/minimessage/format.html).
+#  Run /chess reload after editing. Missing keys fall back to the built-in defaults.
+# ============================================================================
+
+default-piece: PAWN        # piece every new player starts with
+
+storage:
+  autosave-minutes: 5
+
+stats:
+  public-lookup: true      # may everybody use /chess stats <player>?
+
+# ------------------------------------------------------------------ choosing pieces
+choose:
+  enabled: true
+  allowed-during-event: false   # during Chess War pieces can only be changed with the Piece Trader
+  cooldown-seconds: 300         # between free /chess choose changes (first choice is free)
+  blocked-in-combat: true
+  switch-lockout-seconds: 20    # abilities of a freshly chosen piece start with at least this cooldown
+
+# ------------------------------------------------------------------ combat
+combat:
+  tag-seconds: 20
+  punish-logout: false          # kill players who log out while combat tagged
+
+# ------------------------------------------------------------------ ability rules
+abilities:
+  allow-concurrent: false       # false = only one timed ability active at a time (prevents stacking)
+  ready-notification: true
+  announce-radius: 24           # nearby players see "X used Y" (0 = off)
+  support-non-event-players: true   # outside events support abilities also help players you are not fighting
+
+ability-items:                  # optional keybind-style items: /chess wand
+  enabled: true
+  material: BLAZE_ROD
+  name: "<gold><bold>Chess Scepter"
+  lore:
+    - "<gray>Right-click: <white>Ability 1"
+    - "<gray>Sneak + right-click: <white>Ability 2"
+    - "<gray>Swap hands (F): <white>Ability 3"
+
+particles:
+  enabled: true
+  default-ability: end_rod
+  piece-change: totem_of_undying
+sounds:
+  enabled: true
+  piece-change: item.armor.equip_iron
+
+# ------------------------------------------------------------------ name tags
+nametag:
+  enabled: true
+  prefix-format: "<emoji> "          # shown in front of the name above the head
+  tab-format: "<emoji> <name>"       # tab list
+  override-foreign-teams: false      # true = replace scoreboard teams of other plugins
+
+# ------------------------------------------------------------------ the six pieces
+classes:
+  pawn:
+    display-name: Pawn
+    emoji: "♟"
+    color: GRAY
+    icon: IRON_NUGGET
+    role: Balanced fighter
+    playstyle: Reliable all-rounder that grows stronger when it matters.
+    stats: {offense: 5, defense: 5, mobility: 6, support: 3}
+    abilities:
+      1:
+        name: Forward March
+        description: Gain Speed II for a short time.
+        icon: SUGAR
+        cooldown: 40
+        duration: 8
+        speed-level: 2
+        particle: cloud
+        sound: entity.horse.gallop
+      2:
+        name: Second Wind
+        description: Instantly regenerate a portion of your missing health.
+        icon: GLISTERING_MELON_SLICE
+        cooldown: 60
+        duration: 0
+        heal-missing-fraction: 0.4
+        particle: heart
+        sound: entity.player.breath
+      3:
+        name: Promotion
+        description: Temporarily improve your combat statistics (Strength + Resistance).
+        icon: GOLD_NUGGET
+        cooldown: 90
+        duration: 10
+        strength-level: 1
+        resistance-level: 1
+        particle: totem_of_undying
+        sound: item.totem.use
+  knight:
+    display-name: Knight
+    emoji: "♞"
+    color: AQUA
+    icon: IRON_HORSE_ARMOR
+    role: Mobility and aggressive combat
+    playstyle: Hit hard, jump in and out of fights.
+    stats: {offense: 7, defense: 4, mobility: 10, support: 3}
+    abilities:
+      1:
+        name: L-Jump
+        description: Perform a powerful forward leap (no fall damage for a few seconds).
+        icon: RABBIT_FOOT
+        cooldown: 45
+        duration: 0
+        forward-strength: 1.6
+        vertical-strength: 0.7
+        fall-protection: 5
+        particle: cloud
+        sound: entity.horse.jump
+      2:
+        name: Knight's Charge
+        description: Gain temporary speed, strength and jump height.
+        icon: IRON_SWORD
+        cooldown: 60
+        duration: 8
+        speed-level: 2
+        strength-level: 1
+        jump-level: 2
+        particle: crit
+        sound: entity.horse.angry
+      3:
+        name: Evasion
+        description: Briefly gain a burst of movement speed.
+        icon: FEATHER
+        cooldown: 40
+        duration: 5
+        speed-level: 3
+        particle: cloud
+        sound: entity.phantom.flap
+  bishop:
+    display-name: Bishop
+    emoji: "♝"
+    color: LIGHT_PURPLE
+    icon: AMETHYST_SHARD
+    role: Support and defensive magic
+    playstyle: Keep your team alive with wards, healing and cleansing.
+    stats: {offense: 4, defense: 7, mobility: 5, support: 9}
+    abilities:
+      1:
+        name: Diagonal Ward
+        description: Temporary protection (Resistance + a small absorption shield).
+        icon: SHIELD
+        cooldown: 45
+        duration: 8
+        resistance-level: 1
+        absorption-level: 1
+        particle: enchant
+        sound: block.beacon.activate
+      2:
+        name: Sanctuary
+        description: Instantly restore health of nearby teammates (and yourself).
+        icon: GLOWSTONE_DUST
+        cooldown: 50
+        duration: 0
+        radius: 8
+        heal: 6
+        include-self: true
+        particle: heart
+        sound: block.respawn_anchor.charge
+      3:
+        name: Holy Light
+        description: Regeneration for nearby teammates and a cleanse of harmful effects.
+        icon: GHAST_TEAR
+        cooldown: 70
+        duration: 8
+        radius: 8
+        regeneration-level: 2
+        cleanse: true
+        include-self: true
+        particle: end_rod
+        sound: block.amethyst_block.chime
+  rook:
+    display-name: Rook
+    emoji: "♜"
+    color: DARK_GRAY
+    icon: STONE_BRICKS
+    role: Tank and battlefield control
+    playstyle: Hold the line. Slow, but nearly unbreakable.
+    stats: {offense: 5, defense: 10, mobility: 2, support: 4}
+    abilities:
+      1:
+        name: Castle
+        description: Gain strong resistance (but you are slowed while it lasts).
+        icon: BRICKS
+        cooldown: 60
+        duration: 6
+        resistance-level: 2
+        slowness-level: 1
+        particle: block_marker
+        sound: block.anvil.land
+      2:
+        name: Iron Resolve
+        description: Gain temporary absorption hearts.
+        icon: IRON_INGOT
+        cooldown: 70
+        duration: 15
+        absorption-level: 3
+        particle: crit
+        sound: item.armor.equip_iron
+      3:
+        name: Fortress
+        description: Reduce all incoming damage for a short duration.
+        icon: IRON_BARS
+        cooldown: 80
+        duration: 8
+        damage-reduction: 0.4
+        particle: smoke
+        sound: block.iron_door.close
+  queen:
+    display-name: Queen
+    emoji: "♛"
+    color: GOLD
+    icon: NETHER_STAR
+    role: High-damage versatile fighter
+    playstyle: Dominate duels, weaken enemies, trade defense for power.
+    stats: {offense: 10, defense: 5, mobility: 7, support: 6}
+    abilities:
+      1:
+        name: Royal Tempo
+        description: Temporary Strength and Speed.
+        icon: BLAZE_POWDER
+        cooldown: 60
+        duration: 8
+        strength-level: 1
+        speed-level: 2
+        particle: flame
+        sound: entity.blaze.shoot
+      2:
+        name: Royal Decree
+        description: Weaken and slow nearby enemies (needs an enemy in range).
+        icon: WITHER_ROSE
+        cooldown: 70
+        duration: 6
+        radius: 8
+        weakness-level: 1
+        slowness-level: 1
+        particle: smoke
+        sound: entity.evoker.cast_spell
+      3:
+        name: Queen's Gambit
+        description: Gain strong offense but take extra damage.
+        icon: FIRE_CHARGE
+        cooldown: 90
+        duration: 8
+        strength-level: 2
+        damage-taken-increase: 0.3
+        particle: flame
+        sound: entity.ender_dragon.growl
+  king:
+    display-name: King
+    emoji: "♚"
+    color: YELLOW
+    icon: GOLDEN_HELMET
+    role: Leadership and team protection
+    playstyle: Protect the crown and empower your allies.
+    stats: {offense: 6, defense: 9, mobility: 3, support: 10}
+    abilities:
+      1:
+        name: Royal Guard
+        description: Temporary protection (Resistance, absorption and reduced damage).
+        icon: GOLDEN_CHESTPLATE
+        cooldown: 70
+        duration: 10
+        resistance-level: 1
+        absorption-level: 2
+        damage-reduction: 0.2
+        particle: end_rod
+        sound: item.armor.equip_gold
+      2:
+        name: King's Rally
+        description: Give nearby teammates temporary Strength, Speed and Resistance.
+        icon: BELL
+        cooldown: 80
+        duration: 10
+        radius: 10
+        strength-level: 1
+        speed-level: 1
+        resistance-level: 1
+        include-self: true
+        require-ally: true
+        particle: happy_villager
+        sound: block.bell.use
+      3:
+        name: Last Stand
+        description: Only usable when low on health - become much stronger for a while.
+        icon: TOTEM_OF_UNDYING
+        cooldown: 120
+        duration: 8
+        health-threshold: 0.4
+        strength-level: 2
+        resistance-level: 1
+        regeneration-level: 1
+        particle: totem_of_undying
+        sound: item.totem.use
+
+# ------------------------------------------------------------------ Chess War event
+event:
+  join-period-seconds: 60
+  min-players: 2
+  score-limit: 15              # first team to this many points wins
+  time-limit-minutes: 20       # when time runs out the higher score wins
+  auto-join-all: false
+  allow-late-join: true
+  balance-mode: STRENGTH       # STRENGTH (balances count and piece strength) or RANDOM
+  countdown-marks: [60, 30, 10, 5, 4, 3, 2, 1]
+  time-warnings: [300, 60, 30, 10]
+  points:
+    kill: 1
+    king-kill-bonus: 2
+  respawn:
+    mode: INSTANT              # INSTANT, DELAYED (spectate for delay-seconds) or ELIMINATION (out until the end)
+    delay-seconds: 8
+  disconnect-grace-seconds: 120
+  remove-on-disconnect: false
+  sidebar: true
+  final-sidebar-seconds: 15
+  final-board-players: 5
+  teams:
+    white: {name: White, color: WHITE}
+    black: {name: Black, color: DARK_GRAY}
+  rewards:                      # chess-points, items (MATERIAL:amount) and console commands (%player%)
+    participants:
+      chess-points: 10
+    winners:
+      chess-points: 50
+      items: ["DIAMOND:3"]
+      commands: []
+    losers:
+      chess-points: 0
+
+# The winner (MVP = most kills on the winning team) receives the Grandmaster Mace.
+grandmaster-mace:
+  recipient: MVP               # MVP, ALL_WINNERS or NONE
+  name: "<gradient:#ffd700:#ff8c00><bold>♚ Grandmaster Mace"
+  model: "chesssmp:grandmaster_mace"
+  unbreakable: true
+  dash-strength: 1.9
+  dash-min-vertical: 0.2
+  dash-cooldown-seconds: 6
+  lore:
+    - "<gray>Awarded to the winner of a Chess War."
+    - ""
+    - "<gold>Right-click <gray>while holding: <white>dash forward"
+
+# ------------------------------------------------------------------ Piece Trader
+trader:
+  material: EMERALD
+  display-name: "<green>♟ Piece Trader"
+  lore:
+    - "<gray>Right-click to open the trading menu."
+    - "<gray>Change your chess piece, buy combat gear,"
+    - "<gray>consumables and tactical items."
+    - ""
+    - "<dark_gray>Bound to its owner."
+  bind-to-owner: true
+  allow-drop: false
+  confirm-threshold: 10        # trades costing at least this many items ask for confirmation
+  change-piece:
+    cost: ["DIAMOND:6", "GOLD_INGOT:8"]
+  offers:
+    ender_pearls:
+      material: ENDER_PEARL
+      amount: 1
+      category: Tactical
+      cost: ["EMERALD:4"]
+    golden_apple:
+      material: GOLDEN_APPLE
+      amount: 1
+      category: Consumable
+      cost: ["GOLD_INGOT:6"]
+    shield:
+      material: SHIELD
+      amount: 1
+      category: Combat equipment
+      cost: ["IRON_INGOT:8"]
+    wind_charges:
+      material: WIND_CHARGE
+      amount: 4
+      category: Tactical
+      cost: ["EMERALD:5"]
+    experience_bottles:
+      material: EXPERIENCE_BOTTLE
+      amount: 16
+      category: Consumable
+      cost: ["GOLD_INGOT:4"]
+    enchanted_golden_apple:
+      material: ENCHANTED_GOLDEN_APPLE
+      amount: 1
+      category: Consumable
+      cost: ["EMERALD:12"]
+
+# ------------------------------------------------------------------ crafting restrictions
+# These items can no longer be crafted - get them from the villagers' shops instead.
+crafting:
+  block-enabled: true
+  blocked-results:
+    - SHIELD
+    - WIND_CHARGE
+    - BREEZE_ROD
+    - MACE
+    - GOLDEN_APPLE
+    - ENCHANTED_GOLDEN_APPLE
+    - TNT
+    - END_CRYSTAL
+    - CROSSBOW
+    - BOW
+    - TOTEM_OF_UNDYING
+    - ENDER_EYE
+
+# ------------------------------------------------------------------ custom items
+items:
+  remnant:
+    material: ECHO_SHARD
+    name: "<gradient:#00ffa2:#0a6b4a><bold>Meteor Remnant"
+    model: "chesssmp:remnant"
+    lore:
+      - "<gray>A shard of the fallen meteor."
+      - "<gray>8 around a <white>Nether Star<gray> forge the"
+      - "<gold>Chess Grandmaster<gray> title."
+  chess-grandmaster:
+    material: NAME_TAG
+    name: "<gradient:#ffd700:#ff8c00><bold>♚ Chess Grandmaster"
+    model: ""
+    lore:
+      - "<gray>Right-click to claim the title."
+      - "<gray>Kill players to collect their pieces."
+      - "<gray>All six pieces: freezing hit, Speed III, Resistance I."
+      - "<red>Dying drops the title and resets your pieces."
+  chess-clock:
+    material: CLOCK
+    name: "<aqua><bold>Chess Clock"
+    model: ""
+    lore:
+      - "<gray>Right-click: everything within 20 blocks"
+      - "<gray>slows to a crawl. You are not affected."
+      - "<dark_gray>Cooldown: 50 seconds"
+
+grandmaster:
+  freeze-seconds: 15
+  freeze-cooldown-seconds: 120
+  speed-level: 3
+  resistance-level: 1
+  prefix-format: "<gold><bold>♚ GRANDMASTER</bold></gold> "
+  tab-prefix: "<gold>♚ </gold>"
+
+clock:
+  radius: 20
+  duration-seconds: 10
+  cooldown-seconds: 50
+  slowness-level: 6
+  fatigue-level: 3
+  projectile-speed-factor: 0.25
+
+resourcepack:
+  use-item-models: true     # set to false if you do not use the ChessSMP resource pack
+
+# ------------------------------------------------------------------ meteor
+meteor:
+  announce: true
+  crater:
+    radius: 28              # very large crater
+    depth: 12
+  core:
+    radius: 5               # medium meteor (4-8)
+  blocks-per-tick: 2000
+  core-remnants: 3          # remnants in the barrel inside the meteor
+  villager:
+    name: "<green><bold>Meteor Trader"
+  auto-spawn:
+    enabled: false          # true = a meteor crashes at a random place every interval
+    interval-minutes: 120
+    radius: 2000
+    world: ""               # empty = main world
+  shop:
+    offers:
+      remnant:
+        type: remnant
+        amount: 1
+        label: Meteor Remnant
+        category: Rare
+        cost: ["NETHERITE_INGOT:6", "DIAMOND_BLOCK:2"]
+      chess_clock:
+        type: clock
+        label: Chess Clock
+        category: Tactical
+        cost: ["NETHERITE_INGOT:8", "DIAMOND:16"]
+      netherite_helmet:
+        material: NETHERITE_HELMET
+        category: Maxed gear
+        enchants: [protection:4, unbreaking:3, mending:1, respiration:3, aqua_affinity:1]
+        cost: ["NETHERITE_INGOT:4", "DIAMOND:8"]
+      netherite_chestplate:
+        material: NETHERITE_CHESTPLATE
+        category: Maxed gear
+        enchants: [protection:4, unbreaking:3, mending:1]
+        cost: ["NETHERITE_INGOT:6", "DIAMOND:12"]
+      netherite_leggings:
+        material: NETHERITE_LEGGINGS
+        category: Maxed gear
+        enchants: [protection:4, unbreaking:3, mending:1, swift_sneak:3]
+        cost: ["NETHERITE_INGOT:5", "DIAMOND:10"]
+      netherite_boots:
+        material: NETHERITE_BOOTS
+        category: Maxed gear
+        enchants: [protection:4, unbreaking:3, mending:1, feather_falling:4, depth_strider:3, soul_speed:3]
+        cost: ["NETHERITE_INGOT:4", "DIAMOND:8"]
+      netherite_sword:
+        material: NETHERITE_SWORD
+        category: Maxed gear
+        enchants: [sharpness:5, unbreaking:3, mending:1, fire_aspect:2, looting:3, sweeping_edge:3]
+        cost: ["NETHERITE_INGOT:5", "DIAMOND:10"]
+      netherite_axe:
+        material: NETHERITE_AXE
+        category: Maxed gear
+        enchants: [sharpness:5, unbreaking:3, mending:1, efficiency:5]
+        cost: ["NETHERITE_INGOT:5", "DIAMOND:10"]
+      mace:
+        material: MACE
+        category: Maxed gear
+        enchants: [density:5, wind_burst:3, unbreaking:3, mending:1]
+        cost: ["NETHERITE_INGOT:8", "DIAMOND:16"]
+      bow:
+        material: BOW
+        category: Maxed gear
+        enchants: [power:5, punch:2, flame:1, infinity:1, unbreaking:3]
+        cost: ["DIAMOND:12", "GOLD_INGOT:16"]
+      crossbow:
+        material: CROSSBOW
+        category: Maxed gear
+        enchants: [quick_charge:3, piercing:4, unbreaking:3, mending:1]
+        cost: ["DIAMOND:12", "GOLD_INGOT:16"]
+      shield:
+        material: SHIELD
+        category: Maxed gear
+        enchants: [unbreaking:3, mending:1]
+        cost: ["DIAMOND:6", "IRON_INGOT:16"]
+      elytra:
+        material: ELYTRA
+        category: Maxed gear
+        enchants: [unbreaking:3, mending:1]
+        cost: ["NETHERITE_INGOT:6", "DIAMOND:16"]
+      totem:
+        material: TOTEM_OF_UNDYING
+        category: Consumable
+        cost: ["EMERALD:24"]
+      enchanted_golden_apples:
+        material: ENCHANTED_GOLDEN_APPLE
+        amount: 2
+        category: Consumable
+        cost: ["EMERALD:20"]
+      golden_apples:
+        material: GOLDEN_APPLE
+        amount: 8
+        category: Consumable
+        cost: ["GOLD_INGOT:24"]
+      breeze_rods:
+        material: BREEZE_ROD
+        amount: 8
+        category: Tactical
+        cost: ["EMERALD:12"]
+      wind_charges:
+        material: WIND_CHARGE
+        amount: 16
+        category: Tactical
+        cost: ["EMERALD:12"]
+      ender_pearls:
+        material: ENDER_PEARL
+        amount: 8
+        category: Tactical
+        cost: ["EMERALD:16"]
+      tnt:
+        material: TNT
+        amount: 8
+        category: Tactical
+        cost: ["EMERALD:12"]
+      end_crystals:
+        material: END_CRYSTAL
+        amount: 4
+        category: Tactical
+        cost: ["DIAMOND:8", "EMERALD:8"]
+      arrows:
+        material: ARROW
+        amount: 64
+        category: Ammunition
+        cost: ["IRON_INGOT:16"]
+      firework_rockets:
+        material: FIREWORK_ROCKET
+        amount: 64
+        category: Ammunition
+        cost: ["GOLD_INGOT:12"]
+      cobwebs:
+        material: COBWEB
+        amount: 16
+        category: Tactical
+        cost: ["EMERALD:6"]
+      xp_bottles:
+        material: EXPERIENCE_BOTTLE
+        amount: 64
+        category: Consumable
+        cost: ["GOLD_INGOT:10"]
+
+# ------------------------------------------------------------------ /chess announce
+announce:
+  default-title-color: gold
+  default-subtitle-color: yellow
+  stay-seconds: 5
+  fade-in-ms: 500
+  fade-out-ms: 1000
+  sound: block.note_block.chime
+
+# ------------------------------------------------------------------ progression
+points:
+  kill: 5
+  king-kill-bonus: 10
+  same-victim-cooldown-seconds: 300   # killing the same player again within this time gives no points
+
+progression:               # ranks are cosmetic only (title + kill effect) - they never change combat values
+  ranks:
+    pawn:   {points: 0,    title: Foot Soldier, kill-effect: ""}
+    knight: {points: 100,  title: Cavalier,     kill-effect: crit}
+    bishop: {points: 300,  title: Oracle,       kill-effect: enchant}
+    rook:   {points: 700,  title: Bulwark,      kill-effect: smoke}
+    queen:  {points: 1500, title: Sovereign,    kill-effect: flame}
+    king:   {points: 3000, title: Grandmaster,  kill-effect: totem_of_undying}
+
+objectives:                # TYPE: KILLS, BEST_STREAK, EVENT_WINS, EVENTS_PLAYED, ABILITIES_USED, PIECE_CHANGES, POINTS
+  first-capture:
+    name: First Capture
+    description: Defeat your first opponent.
+    type: KILLS
+    amount: 1
+    reward: 10
+  hunter:
+    name: Hunter
+    description: Defeat 25 opponents.
+    type: KILLS
+    amount: 25
+    reward: 75
+  on-a-roll:
+    name: On a Roll
+    description: Reach a killstreak of 5.
+    type: BEST_STREAK
+    amount: 5
+    reward: 50
+  tactician:
+    name: Tactician
+    description: Use 100 abilities.
+    type: ABILITIES_USED
+    amount: 100
+    reward: 50
+  veteran:
+    name: War Veteran
+    description: Take part in 5 Chess War events.
+    type: EVENTS_PLAYED
+    amount: 5
+    reward: 60
+  champion:
+    name: Champion
+    description: Win a Chess War.
+    type: EVENT_WINS
+    amount: 1
+    reward: 100
+  shapeshifter:
+    name: Shapeshifter
+    description: Change your piece 3 times.
+    type: PIECE_CHANGES
+    amount: 3
+    reward: 25
+
+killstreak:
+  shutdown-min: 5
+  announcements:
+    3: "<gold>♞ <player> <gray>is on a <yellow><streak>-capture <gray>streak!"
+    5: "<gold>♛ <player> <gray>is dominating the board - <red><streak> <gray>captures in a row!"
+    10: "<dark_red>♚ <player> <gray>is unstoppable: <red><streak> <gray>captures!"
+
+join-messages:
+  enabled: true
+  messages:
+    - "<yellow><emoji> <player> <gray>takes a seat at the board. <dark_gray>(<rank>)"
+    - "<yellow><emoji> <player> <gray>moves into position."
+    - "<yellow><emoji> <player> <gray>enters the game as a <piece>."
+
+death-messages:
+  enabled: true
+  pvp:
+    - "<killer_piece> <killer> <gray>captured <victim_piece> <victim><gray>."
+    - "<victim_piece> <victim> <gray>was taken off the board by <killer_piece> <killer><gray>."
+    - "<killer> <gray>checkmated <victim><gray>!"
+
+# ------------------------------------------------------------------ messages
+messages:
+  prefix: "<dark_gray>[<gold>♚<dark_gray>] <gray>"
+  no-permission: "<red>You do not have permission to do that."
+  player-only: "<red>Only players can use this command."
+  unknown-subcommand: "<red>Unknown sub command. Use <white>/chess help<red>."
+  usage: "<red>Usage: <white><usage>"
+  player-not-found: "<red>Player <white><player> <red>was not found."
+  reload-done: "<green>ChessSMP configuration reloaded."
+  admin-done: "<green>Done."
+  help-header: "<dark_gray><strikethrough>     <reset> <gold><bold>ChessSMP <reset><dark_gray><strikethrough>     "
+  help-lines:
+    - "<yellow>/chess choose [piece] <gray>- choose your chess piece"
+    - "<yellow>/chess ability <1-3> <gray>- use an ability"
+    - "<yellow>/chessinfo <gray>- your piece, stats and abilities"
+    - "<yellow>/chess trader <gray>- get the Piece Trader"
+    - "<yellow>/chess wand <gray>- get the Chess Scepter"
+    - "<yellow>/chess top <gray>- Chess Points leaderboard"
+    - "<yellow>/chess stats [player] <gray>- statistics"
+    - "<yellow>/chess trust <player> <gray>- your attacks will never affect them (/chess untrust)"
+    - "<yellow>/chess event <join|leave|status> <gray>- Chess War"
+  help-admin-lines:
+    - "<red>/chess event <start|stop|set|setspawn> <gray>- manage Chess War"
+    - "<red>/chess give <player> <item> <gray>- trader, ability_wand, grandmaster_mace, chess_grandmaster, remnant, chess_clock"
+    - "<red>/chess announce [-t color] [-s color] [-d sec] <title> | <subtitle> <gray>- screen announcement"
+    - "<red>/chess meteor <spawn [random]|villager> <gray>- meteor with the shop villager"
+    - "<red>/chess admin ... <gray>- setpiece, reset, setpoints, addpoints, clearcooldowns, setcooldown, setduration, setstat"
+    - "<red>/chess reload"
+  # --- pieces
+  piece-changed: "<green>You are now a <piece><green>."
+  choose-hint: "<gray>Pick your piece with <white>/chess choose<gray> - see what each one does with <white>/chessinfo<gray>."
+  choose-invalid: "<red>Unknown piece. Choose one of: pawn, knight, bishop, rook, queen, king."
+  choose-disabled: "<red>Choosing pieces is disabled."
+  choose-same: "<red>You already are that piece."
+  choose-blocked-event: "<red>During Chess War you can only change piece with the Piece Trader."
+  choose-blocked-combat: "<red>You cannot change piece while in combat."
+  choose-cooldown: "<red>You can change piece again in <white><time><red>."
+  # --- abilities
+  ability-unknown: "<red>You have no such ability."
+  ability-failed: "<red>That ability cannot be used right now."
+  ability-error: "<red>The ability failed unexpectedly. Please tell an admin."
+  ability-cooldown: "<red><ability> <gray>is on cooldown: <white><time>"
+  ability-already-active: "<red>You already have <white><ability> <red>active."
+  ability-full-health: "<red>You are already at full health."
+  ability-nothing-to-heal: "<red>Nobody nearby needs healing."
+  ability-no-targets: "<red>No teammates nearby."
+  ability-no-enemies: "<red>No enemies in range."
+  ability-not-low-enough: "<red>You are not weak enough for a Last Stand yet."
+  ability-in-vehicle: "<red>You cannot do that while riding."
+  ability-no-direction: "<red>Look somewhere horizontal to leap."
+  ability-used: "<gold><ability> <gray>activated (cooldown <cooldown>)"
+  ability-announce: "<gray><emoji> <player> <dark_gray>uses <white><ability>"
+  ability-ready: "<green><ability> <gray>is ready!"
+  # --- kills / progression
+  kill-actionbar: "<victim_piece> <white><victim> <gray>captured <green>(+<points> CP)"
+  killstreak-shutdown: "<red>♟ <killer> <gray>ended <victim>'s <yellow><streak>-capture <gray>streak!"
+  rank-up: "<gold>Rank up! <gray>You are now <white><title> <dark_gray>(<rank>)"
+  objective-complete: "<green>Objective complete: <white><name> <gray>- <description> <green>(+<points> CP)"
+  top-header: "<gold><bold>♚ Top <count> Players"
+  top-line: "<gray>#<rank> <piece> <white><player> <dark_gray>- <yellow><points> CP <dark_gray>(<title>)"
+  top-empty: "<gray>Nobody has earned Chess Points yet."
+  stats-header: "<gold>Statistics of <white><player> <piece>"
+  stats-line: "<gray><label>: <white><value>"
+  # --- trader / items
+  trader-given: "<green>You received the Piece Trader. Right-click it to trade."
+  trader-given-other: "<green>Gave a Piece Trader to <player>."
+  trader-already: "<red>You already own a Piece Trader."
+  trader-no-space: "<red>Free an inventory slot first."
+  trader-not-owner: "<red>This Piece Trader belongs to somebody else."
+  trader-cant-afford: "<red>You are missing: <white><missing>"
+  trader-purchased: "<green>Purchased <white><item><green>."
+  wand-given: "<green>You received the Chess Scepter."
+  wand-already: "<red>You already have a Chess Scepter (or no free slot)."
+  wand-disabled: "<red>Ability items are disabled on this server."
+  give-done: "<green>Gave <white><item> <green>to <white><player><green>."
+  give-received: "<green>You received <white><item><green>."
+  give-unknown: "<red>Unknown item. Items: <white><items>"
+  mace-awarded: "<gold>You received the <bold>Grandmaster Mace<reset><gold>!"
+  mace-cooldown: "<red>Dash ready in <white><time>"
+  clock-used: "<aqua>⏳ <player> <gray>stops the clock - everything slows down!"
+  clock-cooldown: "<red>Chess Clock ready in <white><time>"
+  clock-ended: "<gray>Time flows normally again."
+  # --- trust
+  trust-added: "<green>Your attacks will no longer affect <white><player><green>."
+  trust-notice: "<gray><player> <green>trusts you - their attacks will not hurt you."
+  trust-already: "<yellow><player> is already trusted."
+  trust-removed: "<yellow><player> is no longer trusted."
+  trust-not-trusted: "<red><player> is not on your trust list."
+  trust-self: "<red>You cannot trust yourself."
+  trust-list: "<gray>You trust: <white><players>"
+  trust-list-empty: "<gray>You do not trust anybody."
+  trust-protected: "<gray>You trust <white><player><gray> - no damage dealt."
+  friendly-fire: "<red>Friendly fire is disabled."
+  # --- grandmaster
+  gm-equipped: "<gold><bold>♚ <player> has become a Chess Grandmaster!"
+  gm-already: "<red>You already are a Chess Grandmaster."
+  gm-piece-gained: "<gold>You captured the <piece> <gold>piece! <gray>(<count>/6)"
+  gm-complete: "<gold><bold>♚ <player> holds all six pieces! Freeze, Speed III and Resistance I are theirs."
+  gm-lost: "<red>♚ <player> lost the Grandmaster title! It dropped on the ground."
+  gm-freeze-hit: "<aqua>You froze <white><victim><aqua>!"
+  gm-frozen: "<aqua>You were frozen by <white><attacker> <aqua>for <seconds>s!"
+  # --- announcements / meteor
+  announce-sent: "<green>Announcement sent to <count> players."
+  announce-bad-color: "<red>Unknown color <white><color><red>. Use a name (gold) or #RRGGBB."
+  meteor-crash: "<gold>☄ <red>A meteor has crashed near <white><x>, <z> <gray>(<world>)<red>! A strange villager waits inside..."
+  meteor-building: "<gray>Building the meteor site (<blocks> blocks)..."
+  meteor-done: "<green>The meteor site is finished."
+  meteor-busy: "<red>A meteor is already being built."
+  meteor-no-site: "<red>Could not find dry land for a meteor."
+  meteor-villager: "<green>Meteor Trader spawned."
+  # --- Chess War
+  event-none: "<red>There is no Chess War right now."
+  event-already-running: "<red>A Chess War is already running."
+  event-announce: "<gold><bold>♟ CHESS WAR <reset><yellow>is starting! Joining closes in <white><seconds>s <gray>(first to <limit> points). <green><underlined>[Click to join]"
+  event-announce-hover: "<green>/chess event join"
+  event-title-join: "<gold><bold>♟ CHESS WAR"
+  event-subtitle-join: "<yellow>/chess event join"
+  event-joined: "<green>You joined the Chess War. <gray>(<count> players)"
+  event-already-joined: "<red>You already joined."
+  event-closed: "<red>This Chess War is already underway and closed to new players."
+  event-late-joined: "<green>You joined the battle as <side><green>!"
+  event-left: "<yellow>You left the Chess War."
+  event-not-in: "<red>You are not in a Chess War."
+  event-countdown: "<yellow>Chess War starts in <white><seconds>s <gray>(<players> players)"
+  event-cancelled-min: "<red>Chess War cancelled: at least <min> players are needed."
+  event-cancelled-empty: "<red>Chess War cancelled: nobody is left."
+  event-stopped: "<red>The Chess War was stopped by an administrator."
+  event-title-start: "<gold><bold>THE BATTLE BEGINS"
+  event-subtitle-start: "<gray>You fight for <side>"
+  event-start: "<gold>♟ Chess War begins! <side_white> <gray>vs <side_black> <gray>(<white_players> vs <black_players>, first to <limit>)"
+  event-capture: "<killer_piece> <white><killer> <gray>captured <victim_piece> <white><victim> <green>(+<points> for <side><green>)"
+  event-king-captured: "<red><bold>CHECK! <reset><gray><victim>'s King (<side><gray>) has fallen!"
+  event-eliminated: "<red>You were captured and are out until the end of the battle."
+  event-respawn-delay: "<gray>You return to the board in <white><seconds>s<gray>."
+  event-rejoined: "<green>Welcome back! You are still fighting for <side><green>."
+  event-disconnect-removed: "<gray><player> <red>was away too long and left the battle."
+  event-spawn-set: "<green>Spawn point of <side> <green>set to your position."
+  event-setting-changed: "<green>Event setting <white><key> <green>is now <white><value>."
+  event-time-warning: "<yellow>Chess War: <white><time> <yellow>left!"
+  event-status-idle: "<gray>No Chess War is running."
+  event-status-joining: "<yellow>Chess War is open for joining: <white><players> <yellow>players, <white><time> <yellow>left."
+  event-status-running: "<gold>Chess War: <side_white> <white_score> <gray>- <side_black> <black_score> <gray>(goal <limit>, <time> left, <white_players> vs <black_players> players)"
+  event-status-you: "<gray>You fight for <side> <gray>- captures: <white><kills> <gray>losses: <white><deaths>"
+  event-title-winner: "<gold><bold><side> WINS"
+  event-title-draw: "<yellow><bold>DRAW"
+  event-subtitle-win: "<green>Victory!"
+  event-subtitle-lose: "<red>Defeat."
+  event-subtitle-draw: "<gray>Nobody won this Chess War."
+  event-final-header: "<gold><bold>━━━━ Chess War - Final Scoreboard ━━━━"
+  event-final-winner: "<yellow>Winner: <side> <gray>(<white_score> - <black_score>)"
+  event-final-draw: "<yellow>Draw <gray>(<white_score> - <black_score>)"
+  event-final-side: "<side> <gray>- <white><score> points"
+  event-final-player: "  <piece> <white><player> <gray>captures <white><kills> <gray>losses <white><deaths>"
+  event-sidebar-title: "<gold><bold>♟ Chess War <gray><time>"
+  event-sidebar-final: "<gold><bold>♟ Final Score"
+  event-sidebar-goal: "<yellow>Goal"
+  # --- menus
+  gui-trader-title: "<green>♟ Piece Trader"
+  gui-shop-title: "<green>☄ Meteor Trader"
+  gui-choose-title: "<gold>Choose your piece"
+  gui-piece-title: "<gold>Change piece"
+  gui-confirm-title: "<gold>Confirm purchase"
+  gui-change-piece: "<aqua><bold>Change chess piece"
+  gui-click-to-buy: "<yellow>Click to buy"
+  gui-click-to-select: "<yellow>Click to select"
+  gui-current-piece: "<green>Your current piece"
+  gui-confirm: "<green><bold>Confirm"
+  gui-confirm-lore: "<gray>Pay and receive the item"
+  gui-cancel: "<red><bold>Cancel"
+  gui-back: "<gray>Back"
+  gui-close: "<red>Close"

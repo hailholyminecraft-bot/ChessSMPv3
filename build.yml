@@ -1,0 +1,43 @@
+name: Build ChessSMP
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.9
+
+      - name: Compile, test and package
+        run: mvn --batch-mode --no-transfer-progress clean verify
+
+      - name: Upload plugin JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChessSMP-jar
+          path: target/ChessSMP-*.jar
+          if-no-files-found: error
+
+      - name: Upload resource pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChessSMP-ResourcePack
+          path: resourcepack/
+          if-no-files-found: error
